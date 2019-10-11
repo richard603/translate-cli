@@ -5,7 +5,7 @@ with open('README.rst', 'r') as f:
 
 setuptools.setup(
         name = 'translate-cli',
-        version = '0.0.2',
+        version = '0.0.3',
         author = 'Harryl',
         author_email = 'harryl.mail@protonmail.com',
         description = 'A lightweight cli translate tool',
