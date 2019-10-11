@@ -406,6 +406,9 @@ data = \
     "yo":{
         "name":"Yoruba",
         "nativeName":"Yorùbá"
+    },
+    "auto":{
+        "name":"Detect automaticly"
     }
 }
 '''

@@ -35,59 +35,70 @@ EXAMPLES:
 def list_codes():
     for n, i in enumerate(lang_maps.items()):
         if n % 2 == 0:
-            print(f'{i[1]["name"]:20} -->   {underline.format(bold.format(i[0])):3}')
+            print(f'{i[1]["name"]:20} -->   {underline.format(bold.format(i[0])):3}', end = f'{"":3}')
         else:
-            print(f'{i[1]["name"]:20} -->   {underline.format(bold.format(i[0])):3}', end = '   ')
+            print(f'{i[1]["name"]:20} -->   {underline.format(bold.format(i[0])):3}')
     sys.exit(0)
 
 
 def parse_args():
     arguments = sys.argv[1:]
     is_dict = False
-    sl, tl = 'auto', 'en' # in case not specified
+    sl, tl = 'auto', 'en'
 
     for i in arguments[:]:
-        if i == '-h' or i == '--help':
+        if i in ('-h', '--help'):
             get_help()
-        elif i == '-l' or i == '--list':
+        elif i in ('-l', '--list'):
             list_codes()
-        elif i == '-d' or i == '--dict':
-            arguments.remove(i)
+        elif i in ('-d', '--dict'):
             is_dict = True
-        elif ':' in i:
-            sl, tl = i.split(':')
             arguments.remove(i)
-
+        elif ':' in i:
+            ls = i.split(':'); sl = ls[0] if ls[0] else 'auto'
+            tl = ls[1] if ls[1] not in ('', 'auto') else 'en'
+            arguments.remove(i)
     if len(arguments) == 0:
         print('There is nothing to translate!')
         sys.exit(1)
-    text = ' '.join(arguments)
-    # in case only specified ':', ':zh' or 'en:'...
-    if not sl: sl = 'auto'
-    if not tl: tl = 'en'
+
     # check if lang code is valid
     if sl not in lang_maps or tl not in lang_maps:
-        if sl == 'auto' and tl != 'auto':
-            pass
-        else:
-            raise ValueError('Invalid language code.')
+        raise ValueError('Invalid language code.')
+    text = ' '.join(arguments)
+
     return is_dict, sl, tl, text
 
 
 def main():
     is_dict, sl, tl, text = parse_args()
+
     result = translate(text, sl, tl)
 
-    if isinstance(result['source_pronunciation'], str):
-        _source_pronunciation = italic.format(result['source_pronunciation'])
+    tr = result['translation']
+    tl = lang_maps[tl]['name']
+    trs = ', '.join(result['translations'])
+
+    if result['source_pronunciation'] and \
+            isinstance(result['source_pronunciation'], str):
+        sp = result['source_pronunciation']
     else:
-        result['source_pronunciation'] = None
+        sp = None
+
+    if result['target_pronunciation'] and \
+            isinstance(result['target_pronunciation'], str):
+        tp = result['target_pronunciation']
+    else:
+        tp = None
+
+    if result['src_language'] in lang_maps:
+        sl = lang_maps[result['src_language']]['name']
+    else:
+        sl = result['src_language']
 
     # dictionary mode
     if is_dict:
-        print(text)
-        if result['source_pronunciation']: print(f'/{_source_pronunciation}/')
-        print()
+        print(f'{text}\n/{italic.format(sp)}/\n')
 
         for i in result['definitions']:
             print(i[0])
@@ -109,33 +120,18 @@ def main():
 
     # translation mode
     else:
-        _text = underline.format(text)
+        print(f'{text}')
+        print(f'/{italic.format(sp)}/') if sp else None
+        print('')
+        print(f'{bold.format(tr)}')
+        print(f'/{italic.format(tp)}/') if tp else None
+        print('')
+        print(f'Translation of {underline.format(text)}')
+        print(f'[ {underline.format(sl)} -> {bold.format(tl)} ]')
+        print('')
+        print(f'{underline.format(text)}')
+        print(f'    {bold.format(trs)}')
 
-        try:
-            _sl = underline.format(lang_maps[result['src_language']]['name'])
-        except KeyError:
-            _sl = underline.format(result['src_language'])
-
-        _tl = bold.format(lang_maps[tl]['name'])
-        _result = bold.format(result['translation'])
-        _results = bold.format(', '.join(result['translations']))
-        _target_pronunciation = italic.format(result['target_pronunciation'])
-
-        print(text)
-        if result['source_pronunciation']: print(f'/{_source_pronunciation}/')
-        print(f'\n{_result}')
-        if result['target_pronunciation'] \
-                and isinstance(result['target_pronunciation'], str):
-            print(f'/{_target_pronunciation}/')
-
-        print(
-f'''
-Translations of {_text}
-[ {_sl} -> {_tl} ]
-
-{_text}
-    {_results}'''
-        )
 
 if __name__ == '__main__':
     sys.exit(main())

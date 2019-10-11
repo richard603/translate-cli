@@ -5,17 +5,13 @@ with open('README.rst', 'r') as f:
 
 setuptools.setup(
         name = 'translate-cli',
-        version = '0.0.1',
+        version = '0.0.2',
         author = 'Harryl',
         author_email = 'harryl.mail@protonmail.com',
         description = 'A lightweight cli translate tool',
         long_description = README,
         packages = setuptools.find_packages(),
-        py_modules = [
-            'translate_cli.lang_map',
-            'translate_cli.format'
-        ],
-        scripts = ['trans'],
+        scripts = ['bin/trans'],
         classifiers = [
             'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
             'Programming Language :: Python :: 3',
