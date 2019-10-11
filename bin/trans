@@ -5,9 +5,7 @@ import json
 
 from translate_cli import translate
 
-from translate_cli.format import bold
-from translate_cli.format import italic
-from translate_cli.format import underline
+from translate_cli.format import bold, italic, underline
 from translate_cli.lang_map import lang_maps
 
 
