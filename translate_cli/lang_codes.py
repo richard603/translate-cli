@@ -1,6 +1,8 @@
-import json
+'''a language code-to-name map'''
 
-data = \
+from json import loads
+
+DATA = \
 '''
 {
     "ab":{
@@ -413,4 +415,4 @@ data = \
 }
 '''
 
-lang_maps = json.loads(data)
+LANG_MAP = loads(DATA)

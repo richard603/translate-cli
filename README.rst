@@ -25,8 +25,8 @@ Installation
     $ [sudo] pip install translate-cli
 
 
-Usage
------
+Getting Started
+---------------
 Translate text::
 
     $ trans Nothing is impossible :zh
@@ -65,22 +65,33 @@ Use As A Python Module
 ::
 
     >>> import translate_cli
-    >>> translate_cli.translate("whatever you want to translate", `source_language`, `target_language`)
+    >>> translate_cli.translate("whatever you want to translate", source_language, target_language)
 
 Then you will get a dict as return, which consists of:
 ::
 
-    - translation
-    - source
-    - source_pronunciation
-    - target_pronunciation
-    - translations_verbose
-    - src_language
-    - translations
-    - synonyms
-    - definitions
-    - examples
+    - text
+        original text
+    - text_pron
+        pronunciation of the text(if there is)
+    - text_lang
+        original language of the text
+    - text_syno
+        synonyms of the text(only if it's a word)
+    - text_defi
+        definitions of the text(only if it's a word)
+    - text_exam
+        example uses of the text(only if it's a word)
 
+    - trans
+        translation of the text
+    - trans_pron
+        pronunciation of the translation
+    - trans_all
+        all translations of the text
+    - trans_verbose
+        all translations of the text, and synonyms(in original language)
+    for each translation
 
 ToDo
 ----
