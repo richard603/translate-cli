@@ -1,4 +1,4 @@
-'''translate-cli, a lightweight command-line translator'''
+'''a lightweight command-line translator'''
 
 from . import request, parse
 
