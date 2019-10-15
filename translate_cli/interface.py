@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
+
 import sys
 import argparse
+import os.path
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
 from translate_cli import translate
 from translate_cli.format import BOLD, ITALIC, UNDERLINE
 from translate_cli.lang_codes import LANG_MAP
@@ -50,10 +53,6 @@ def parse_args():
         list_codes()
         sys.exit(0)
 
-    if not args.text:
-        parser.print_help()
-        sys.exit(0)
-
     source_lang, target_lang = 'auto', 'en'
     for text in args.text:
         if ':' in text:
@@ -61,6 +60,10 @@ def parse_args():
             source_lang = languages[0] if languages[0] else 'auto'
             target_lang = languages[1] if languages[1] else 'en'
             args.text.remove(text)
+
+    if not args.text:
+        parser.print_help()
+        sys.exit(0)
 
     args.text = ' '.join(args.text)
     args.source_lang = source_lang
