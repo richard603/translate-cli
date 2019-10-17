@@ -1,11 +1,12 @@
 import setuptools
+from translate_cli import __version__
 
 with open('README.rst', 'r') as f:
     README = f.read()
 
 setuptools.setup(
         name='translate-cli',
-        version='1.0.3',
+        version=__version__,
         author='Harryl',
         author_email='harryl.mail@protonmail.com',
         description='A lightweight cli translate tool',

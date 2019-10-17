@@ -93,9 +93,5 @@ Then you will get a dict as return, which consists of:
         all translations of the text, and synonyms(in original language)
     for each translation
 
-ToDo
-----
-- Add support for proxy
-
 
 .. _Translate Shell: https://github.com/soimort/translate-shell

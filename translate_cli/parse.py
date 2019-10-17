@@ -57,9 +57,7 @@ def parse(data):
     for code in codes:
         try:
             exec(dedent(code))
-        except IndexError:
-            ...
-        except TypeError:
+        except (IndexError, TypeError):
             ...
 
     return result
