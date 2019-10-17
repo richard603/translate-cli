@@ -49,7 +49,7 @@ def parse_args(argv=None):
         elif arg in ('-d', '--dict'):
             dictionary_mode = True
             args.remove(arg)
-        elif ':' not in arg:
+        if ':' not in arg:
             continue
         languages = arg.split(':')
         src_lang = languages[0] if languages[0] else 'auto'
