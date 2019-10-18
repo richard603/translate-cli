@@ -99,7 +99,9 @@ def dict_print(translation):
 def trans_print(translation):
     text = translation['text']
 
-    text_lang = LANG_MAP[translation['text_lang']]['name']
+    text_lang = LANG_MAP[translation['text_lang']]['name'] \
+    if LANG_MAP.get(translation['text_lang']) \
+    else translation['text_lang']
     text_pron = translation['text_pron']\
     if translation['text_pron'] and \
         isinstance(translation['text_pron'], str) else None
