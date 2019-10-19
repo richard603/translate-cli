@@ -1,6 +1,6 @@
 '''a lightweight command-line translator'''
 
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 from . import request, parse
 

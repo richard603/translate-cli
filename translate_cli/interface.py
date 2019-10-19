@@ -1,29 +1,13 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 import os.path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../'))
 from translate_cli import translate
 from translate_cli.format import BOLD, ITALIC, UNDERLINE
 from translate_cli.lang_codes import LANG_MAP
-
-def get_help():
-    print('''usage: trans [OPTIONS] [SOURCE_LANGUAGE]:[TARGET_LANGUAGE] [TEXT]
-    A simple cli tool to translate text with google translate
-OPTIONS:
-    -h, --help
-        print help message
-    -d, --dict
-        dictionary mode
-    -l, --list
-        list supported language codes
-EXAMPLES:
-    trans awesome :fr
-        translate 'awesome' to French
-    trans python -d
-        lookup 'python' using dictionary mode''')
-    sys.exit(0)
 
 def list_codes():
     for index, i in enumerate(LANG_MAP.items()):
@@ -33,36 +17,52 @@ def list_codes():
         else:
             print(f'{i[1]["name"]:20} \
 -->   {UNDERLINE.format(BOLD.format(i[0])):3}')
-    sys.exit(0)
 
 def parse_args(argv=None):
-    args = argv if argv else sys.argv[1:]
-    global dictionary_mode
-    dictionary_mode = False
-    src_lang, dst_lang = 'auto', 'en'
+    parser = argparse.ArgumentParser(
+        prog='trans',
+        description='A simple cli tool to translate',
+        usage='trans [OPTIONS] [SOURCES]:[TARGETS] [TEXT]...',
+        epilog="""examples:
+    trans awesome :fr
+        translate 'awesome' to French
+    trans python -d
+        lookup 'python' using dictionary mode""",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        '-l', '--list',
+        action='store_true',
+        help='list supported language codes'
+    )
+    parser.add_argument(
+        '-d', '--dictionary-mode',
+        action='store_true',
+        default=False,
+        help='dictionary mode'
+    )
+    parser.set_defaults(
+        src_lang='auto',
+        dst_lang='en'
+    )
+    args, texts = parser.parse_known_args(argv)
 
-    for arg in args[:]:
-        if arg in ('-h', '--help'):
-            get_help()
-        elif arg in ('-l', '--list'):
-            list_codes()
-        elif arg in ('-d', '--dict'):
-            dictionary_mode = True
-            args.remove(arg)
-        if ':' not in arg:
-            continue
-        languages = arg.split(':')
-        src_lang = languages[0] if languages[0] else 'auto'
-        dst_lang = languages[1] if languages[1] else 'en'
-        args.remove(arg)
-
-    if not args:
-        get_help()
-    if not LANG_MAP.get(src_lang) or not LANG_MAP.get(dst_lang):
+    if args.list:
+        list_codes()
+        sys.exit(0)
+    for text in texts[:]:
+        if ':' in text:
+            languages = text.split(':')
+            args.src_lang = languages[0] if languages[0] else 'auto'
+            args.dst_lang = languages[1] if languages[1] else 'en'
+            texts.remove(text)
+    if not texts:
+        parser.print_help()
+        sys.exit(0)
+    args.text = ' '.join(texts)
+    if not LANG_MAP.get(args.src_lang) or not LANG_MAP.get(args.dst_lang):
         raise ValueError('Invalid language code.')
-    text = ' '.join(args)
-
-    return text, src_lang, dst_lang
+    return args
 
 def dict_print(translation):
     text = translation['text']
@@ -99,8 +99,8 @@ def dict_print(translation):
 def trans_print(translation):
     text = translation['text']
 
-    text_lang = LANG_MAP[translation['text_lang']]['name'] \
-    if LANG_MAP.get(translation['text_lang']) \
+    text_lang = LANG_MAP[translation['text_lang'][:2]]['name'] \
+    if LANG_MAP.get(translation['text_lang'][:2]) \
     else translation['text_lang']
     text_pron = translation['text_pron']\
     if translation['text_pron'] and \
@@ -129,10 +129,10 @@ def trans_print(translation):
     print(f'    {BOLD.format(trans_all)}')
 
 def main(argv=None):
-    arguments = parse_args(argv)
-    translation = translate(*arguments)
-    translation['trans_lang'] = arguments[2]
-    if dictionary_mode:
+    args = parse_args(argv)
+    translation = translate(args.text, args.src_lang, args.dst_lang)
+    translation['trans_lang'] = args.dst_lang
+    if args.dictionary_mode:
         dict_print(translation)
     else:
         trans_print(translation)
